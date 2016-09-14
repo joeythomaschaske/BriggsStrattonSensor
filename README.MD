@@ -26,6 +26,10 @@ When starting development
 
 3. when the work is done: git add '.'. git commit -m 'a short message about your work you did'. git push.
 
-4. create a pull request that will merge your code into master via github.com
+4. create a pull request that will merge your code into master via https://github.com/joeythomaschaske/BriggsStrattonSensor/compare?expand=1
 
-5. git checkout master. git pull. start from step 1 again.
+6. fix merge errors.
+
+7. merge your Pull request
+
+8. git checkout master. git pull. start from step 1 again.

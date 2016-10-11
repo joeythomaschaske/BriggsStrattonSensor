@@ -10,6 +10,12 @@ import android.view.ViewGroup;
 
 import com.example.joseph.briggsstrattonapp.R;
 
+/*
+    WE CAN USE PROGRESSBAR TO SHOW BATTERY LIFE, HERES THE DOCUMENTATION
+    https://developer.android.com/reference/android/widget/ProgressBar.html
+ */
+
+
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the

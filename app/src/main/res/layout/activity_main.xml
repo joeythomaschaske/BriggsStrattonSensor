@@ -7,7 +7,8 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.example.joseph.briggsstrattonapp.MainActivity">
+    tools:context="com.example.joseph.briggsstrattonapp.MainActivity"
+    android:id="@+id/bluetoothOutput">
 
     <Button
         android:layout_width="wrap_content"
@@ -17,4 +18,34 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="119dp" />
+
+    <Button
+        android:text="Read From Bluetooth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/read" />
+
+    <TextView
+        android:text="Value sent from bluetooth:"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="55dp"
+        android:layout_marginEnd="55dp"
+        android:id="@+id/Label"
+        android:layout_alignBaseline="@+id/bluetoothVal"
+        android:layout_alignBottom="@+id/bluetoothVal"
+        android:layout_toLeftOf="@+id/bluetoothVal"
+        android:layout_toStartOf="@+id/bluetoothVal" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="91dp"
+        android:id="@+id/bluetoothVal"
+        android:text=""
+        android:layout_below="@+id/read"
+        android:layout_alignRight="@+id/bluetoothConnect"
+        android:layout_alignEnd="@+id/bluetoothConnect" />
 </RelativeLayout>

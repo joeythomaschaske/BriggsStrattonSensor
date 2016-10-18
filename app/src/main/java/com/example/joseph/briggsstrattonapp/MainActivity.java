@@ -150,13 +150,17 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
             boolean connection = gatt.connect(); //this needs to go into onConnectionStateChange
-            boolean discovery = gatt.discoverServices(); //this needs to go into
+            boolean discovery = gatt.discoverServices(); //this section needs to go into onServicesDiscovered
             BluetoothGattService ser = gatt.getService(UUID.fromString("19B10000-E8F2-537E-4F6C-D104768A1214"));
             List<BluetoothGattCharacteristic> chars = ser.getCharacteristics();
             BluetoothGattCharacteristic switchChar = chars.get(0);
             boolean b = gatt.readCharacteristic(switchChar);
-            String value = switchChar.getStringValue(0);
+            // all the way up to here
+
+
+            String value = switchChar.getStringValue(0); //this section needs to go into onCharacteristicRead
             outputText.setText(value);
+            //up to here
         } catch (Exception e) {
             Toast exception = Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG);
             exception.show();

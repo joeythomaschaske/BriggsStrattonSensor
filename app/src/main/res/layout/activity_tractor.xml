@@ -6,6 +6,7 @@
     android:id="@+id/home_layout"
     android:background="#dad6e6">
 
+
     <LinearLayout
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
@@ -14,20 +15,32 @@
         <Button
             android:layout_width="189dp"
             android:layout_height="153dp"
-            android:text="@string/tractor"
-            android:id="@+id/tractor_button"
+            android:text="@string/engine"
+            android:id="@+id/engine_button"
             android:background="@android:color/transparent"
-            android:drawableTop="@drawable/tractor_img"/>
+            android:drawableTop="@drawable/engine_img"/>
 
         <Button
             android:layout_width="189dp"
             android:layout_height="153dp"
-            android:text="@string/bluetooth"
-            android:id="@+id/bluetooth_button"
+            android:text="@string/battery"
+            android:id="@+id/bat_button"
             android:background="@android:color/transparent"
-            android:drawableTop="@drawable/bluetoooth_img"/>
+            android:drawableTop="@drawable/battery_img"/>
     </LinearLayout>
 
-
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+        <Button
+            android:layout_width="189dp"
+            android:layout_height="153dp"
+            android:text="@string/oil"
+            android:id="@+id/oil_button"
+            android:background="@android:color/transparent"
+            android:drawableTop="@drawable/oil_img"/>
+    </LinearLayout>
 
 </LinearLayout>

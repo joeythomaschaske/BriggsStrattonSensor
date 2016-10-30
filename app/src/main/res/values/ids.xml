@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="tractor_button" type="id" />
+    <item name="fragment_tractor" type="id" />
+    <item name="container" type="id" />
+    <item name="bluetooth_button" type="id" />
+    <item name="tabs" type="id" />
+    <item name="toolbar" type="id" />
+</resources>

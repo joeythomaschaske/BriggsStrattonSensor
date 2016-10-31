@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -22,9 +23,11 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import static android.bluetooth.BluetoothGattCharacteristic.PERMISSION_READ;
 import static android.bluetooth.BluetoothGattCharacteristic.PROPERTY_READ;
@@ -32,25 +35,31 @@ import static android.bluetooth.BluetoothGattCharacteristic.PROPERTY_READ;
 public class BluetoothActivity extends AppCompatActivity {
     public static Button bluetoothConnectButton;
     public static Button readFromBluetooth;
-    public static TextView outputText;
+    public static TextView voltageText;
+    public static TextView tempText;
+    public static TextView powerText;
 
     public static BluetoothDevice bsDevice;
     public static  BluetoothSocket socket;
     public static InputStream input;
     public static OutputStream output;
 
+    public static ArrayList<BluetoothGattCharacteristic> queue = new ArrayList();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth);
         //Commented out due to error
-       //init();
+       init();
     }
 
     private void init() {
         bluetoothConnectButton = (Button) findViewById(R.id.bluetoothConnect);
         readFromBluetooth = (Button) findViewById(R.id.read);
-        outputText = (TextView) findViewById(R.id.bluetoothVal);
+        voltageText = (TextView) findViewById(R.id.voltage);
+        tempText = (TextView) findViewById(R.id.temp);
+        powerText = (TextView) findViewById(R.id.onOff);
 
         //region bluetooth connection code
 
@@ -103,16 +112,63 @@ public class BluetoothActivity extends AppCompatActivity {
                 @Override
                 public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
                     super.onConnectionStateChange(gatt, status, newState);
+                    gatt.discoverServices();
                 }
 
                 @Override
                 public void onServicesDiscovered(BluetoothGatt gatt, int status) {
                     super.onServicesDiscovered(gatt, status);
+                    BluetoothGattService ser = gatt.getService(UUID.fromString("19B10000-E8F2-537E-4F6C-D104768A1214"));
+                    List<BluetoothGattCharacteristic> chars = ser.getCharacteristics();
+                    BluetoothGattCharacteristic voltage = chars.get(0);
+                    BluetoothGattCharacteristic temp = chars.get(1);
+                    BluetoothGattCharacteristic onOff = chars.get(2);
+                    queue.add(voltage);
+                    queue.add(temp);
+                    queue.add(onOff);
+                    boolean volt = gatt.readCharacteristic(queue.remove(0));
+                    //boolean temperature = gatt.readCharacteristic(temp);
+                    //boolean power = gatt.readCharacteristic(onOff);
                 }
 
                 @Override
                 public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
                     super.onCharacteristicRead(gatt, characteristic, status);
+                    Log.d("UUID", characteristic.getUuid().toString());
+                    if(characteristic.getUuid().toString().equals("19b10001-e8f2-537e-4f6c-d104768a1214")) {
+                        //voltage
+                        final String value = characteristic.getStringValue(0); //this section needs to go into onCharacteristicRead
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                voltageText.setText(value);
+                            }
+                        });
+
+                    } else if(characteristic.getUuid().toString().equals("19b10002-e8f2-537e-4f6c-d104768a1214")) {
+                        //temp
+                        final String value = characteristic.getStringValue(0); //this section needs to go into onCharacteristicRead
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                tempText.setText(value);
+                            }
+                        });
+                    } else if(characteristic.getUuid().toString().equals("19b10003-e8f2-537e-4f6c-d104768a1214")) {
+                        // On Off
+                        final String value = characteristic.getStringValue(0); //this section needs to go into onCharacteristicRead
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                powerText.setText(value);
+                            }
+                        });
+                    }
+                    if(!queue.isEmpty()) {
+
+                        boolean read = gatt.readCharacteristic(queue.remove(0));
+                        System.out.println("debug line");
+                    }
                 }
 
                 @Override
@@ -151,20 +207,21 @@ public class BluetoothActivity extends AppCompatActivity {
                 }
             });
             boolean connection = gatt.connect(); //this needs to go into onConnectionStateChange
-            boolean discovery = gatt.discoverServices(); //this section needs to go into onServicesDiscovered
-            BluetoothGattService ser = gatt.getService(UUID.fromString("19B10000-E8F2-537E-4F6C-D104768A1214"));
-            List<BluetoothGattCharacteristic> chars = ser.getCharacteristics();
-            BluetoothGattCharacteristic switchChar = chars.get(0);
-            boolean b = gatt.readCharacteristic(switchChar);
-            // all the way up to here
-
-
-            String value = switchChar.getStringValue(0); //this section needs to go into onCharacteristicRead
-            outputText.setText(value);
-            //up to here
+//            boolean discovery = gatt.discoverServices(); //this section needs to go into onServicesDiscovered
+//            BluetoothGattService ser = gatt.getService(UUID.fromString("19B10000-E8F2-537E-4F6C-D104768A1214"));
+//            List<BluetoothGattCharacteristic> chars = ser.getCharacteristics();
+//            BluetoothGattCharacteristic switchChar = chars.get(0);
+//            boolean b = gatt.readCharacteristic(switchChar);
+//            // all the way up to here
+//
+//
+//            String value = switchChar.getStringValue(0); //this section needs to go into onCharacteristicRead
+//            outputText.setText(value);
+//            //up to here
         } catch (Exception e) {
             Toast exception = Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG);
             exception.show();
+            Log.d("Error", e.getMessage() + " " + e.getLocalizedMessage());
         }
     }
 

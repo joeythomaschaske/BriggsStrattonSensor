@@ -103,29 +103,13 @@ public class ShowData extends AppCompatActivity {
         ProgressBar voltage = (ProgressBar) findViewById(R.id.volt_prog_bar);
 
         if(value < 0) new IllegalStateException("Voltage can't be < 0! This error occured while fetching voltage value from bluetooth!");
-        if(value > 0 && value < 5) {
+        if(value >= 0 && value < 5) {
             voltage.getProgressDrawable().setColorFilter(Color.RED,android.graphics.PorterDuff.Mode.SRC_IN);
-            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
-            mBuilder.setSmallIcon(R.drawable.battery_img);
-            mBuilder.setContentTitle("Low Voltage!");
-            mBuilder.setContentText("You might want to start your lawnmower; low battery voltage detected!");
-
-            Intent resultIntent = new Intent(this, ShowData.class);
-            TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-            stackBuilder.addParentStack(ShowData.class);
-
-            // Adds the Intent that starts the Activity to the top of the stack
-            stackBuilder.addNextIntent(resultIntent);
-            PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,PendingIntent.FLAG_UPDATE_CURRENT);
-            mBuilder.setContentIntent(resultPendingIntent);
-
-            // Add as notification
-            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            manager.notify(0, mBuilder.build());
-            // setOffPushNotification();
+            setOffVoltageNotification();
         }
         else if(value > 4 && value < 8) {
             voltage.getProgressDrawable().setColorFilter(Color.YELLOW,android.graphics.PorterDuff.Mode.SRC_IN);
+            setOffVoltageNotification();
         }
         else if(value > 7) {
             voltage.getProgressDrawable().setColorFilter(Color.GREEN,android.graphics.PorterDuff.Mode.SRC_IN);
@@ -133,11 +117,31 @@ public class ShowData extends AppCompatActivity {
         voltage.setProgress(value);
     }
 
-    private void setOffPushNotification() {
-        AlarmManager alarmManager = (AlarmManager) this.getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(getApplicationContext(), PushNotifications.class);
-        PendingIntent alarmIntent = PendingIntent.getBroadcast(getApplicationContext(), 123, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, 0, alarmIntent);
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    private void setOffVoltageNotification() {
+        int value = Integer.parseInt(voltageValue);
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
+        mBuilder.setSmallIcon(R.drawable.battery_img);
+        if(value >= 0 && value < 5)
+            mBuilder.setContentTitle("Very Low Voltage!");
+        else if(value > 4 && value < 8)
+            mBuilder.setContentTitle("Low Voltage!");
+        if(value >= 0 && value < 5)
+            mBuilder.setContentText("Very low battery voltage detected!");
+        else if(value > 4 && value < 8)
+            mBuilder.setContentText("Battery voltage is starting to get low!");
+        Intent resultIntent = new Intent(this, ShowData.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(ShowData.class);
+
+        // Adds the Intent that starts the Activity to the top of the stack
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,PendingIntent.FLAG_UPDATE_CURRENT);
+        mBuilder.setContentIntent(resultPendingIntent);
+
+        // Add as notification
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.notify(0, mBuilder.build());
     }
 
     /**

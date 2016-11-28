@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), ShowData.class);
                 // For right now, I'm just putting dummy data through to symbolize voltage,temp etc.
                 // since i don't have arduino on me.
-                intent.putExtra("voltage","8");
+                intent.putExtra("voltage","3");
                 intent.putExtra("temp","70");
                 intent.putExtra("power","on");
                 intent.putExtra("hours","103");
@@ -177,20 +177,6 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 voltageText.setText(value);
-                                // Parse int here and send to push notification?
-
-                                // string value has character 'V' at the end so we can't turn it into an int directly
-                                String valueSplit = "";
-                                int getV = value.lastIndexOf('V');
-                                valueSplit = value.substring(0,getV);
-                                int volt = Integer.parseInt(valueSplit);
-                                // If the voltage is 0, send a push notification alarming the user
-                                if(volt == 0) {
-                                    Intent intent = new Intent(getApplicationContext(), PushNotifications.class);
-                                    intent.putExtra("mode", "Battery - Low Voltage!");
-                                    intent.putExtra("value", 0);
-                                    PendingIntent alarmIntent = PendingIntent.getBroadcast(getApplicationContext(), 123, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-                                }
                             }
                         });
 

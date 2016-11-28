@@ -1,11 +1,20 @@
 package com.example.joseph.briggsstrattonapp;
 
+import android.app.AlarmManager;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.EditText;
@@ -20,6 +29,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import static java.security.AccessController.getContext;
+
 public class ShowData extends AppCompatActivity {
 
     /**
@@ -28,6 +39,7 @@ public class ShowData extends AppCompatActivity {
      */
     private GoogleApiClient client;
     private String voltageValue;
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,6 +97,7 @@ public class ShowData extends AppCompatActivity {
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void setProgBarColorAndProgress(String voltageValue) {
         int value = Integer.parseInt(voltageValue);
         ProgressBar voltage = (ProgressBar) findViewById(R.id.volt_prog_bar);
@@ -92,6 +105,24 @@ public class ShowData extends AppCompatActivity {
         if(value < 0) new IllegalStateException("Voltage can't be < 0! This error occured while fetching voltage value from bluetooth!");
         if(value > 0 && value < 5) {
             voltage.getProgressDrawable().setColorFilter(Color.RED,android.graphics.PorterDuff.Mode.SRC_IN);
+            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
+            mBuilder.setSmallIcon(R.drawable.battery_img);
+            mBuilder.setContentTitle("Low Voltage!");
+            mBuilder.setContentText("You might want to start your lawnmower; low battery voltage detected!");
+
+            Intent resultIntent = new Intent(this, ShowData.class);
+            TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+            stackBuilder.addParentStack(ShowData.class);
+
+            // Adds the Intent that starts the Activity to the top of the stack
+            stackBuilder.addNextIntent(resultIntent);
+            PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,PendingIntent.FLAG_UPDATE_CURRENT);
+            mBuilder.setContentIntent(resultPendingIntent);
+
+            // Add as notification
+            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            manager.notify(0, mBuilder.build());
+            // setOffPushNotification();
         }
         else if(value > 4 && value < 8) {
             voltage.getProgressDrawable().setColorFilter(Color.YELLOW,android.graphics.PorterDuff.Mode.SRC_IN);
@@ -100,6 +131,13 @@ public class ShowData extends AppCompatActivity {
             voltage.getProgressDrawable().setColorFilter(Color.GREEN,android.graphics.PorterDuff.Mode.SRC_IN);
         }
         voltage.setProgress(value);
+    }
+
+    private void setOffPushNotification() {
+        AlarmManager alarmManager = (AlarmManager) this.getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(getApplicationContext(), PushNotifications.class);
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(getApplicationContext(), 123, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, 0, alarmIntent);
     }
 
     /**

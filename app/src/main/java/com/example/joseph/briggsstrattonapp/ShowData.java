@@ -44,17 +44,6 @@ public class ShowData extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_data);
-      //  Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-      //  setSupportActionBar(toolbar);
-
-       /* FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
         Calendar c = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("dd,MMMM,YYYY hh,mm,a");
         //date and time stuff
@@ -103,15 +92,15 @@ public class ShowData extends AppCompatActivity {
         ProgressBar voltage = (ProgressBar) findViewById(R.id.volt_prog_bar);
 
         if(value < 0) new IllegalStateException("Voltage can't be < 0! This error occured while fetching voltage value from bluetooth!");
-        if(value >= 0 && value < 5) {
+        if(value >= 0 && value < 11) {
             voltage.getProgressDrawable().setColorFilter(Color.RED,android.graphics.PorterDuff.Mode.SRC_IN);
             setOffVoltageNotification();
         }
-        else if(value > 4 && value < 8) {
+        else if(value == 11) {
             voltage.getProgressDrawable().setColorFilter(Color.YELLOW,android.graphics.PorterDuff.Mode.SRC_IN);
             setOffVoltageNotification();
         }
-        else if(value > 7) {
+        else if(value >= 12) {
             voltage.getProgressDrawable().setColorFilter(Color.GREEN,android.graphics.PorterDuff.Mode.SRC_IN);
         }
         voltage.setProgress(value);
@@ -122,14 +111,15 @@ public class ShowData extends AppCompatActivity {
         int value = Integer.parseInt(voltageValue);
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
         mBuilder.setSmallIcon(R.drawable.battery_img);
-        if(value >= 0 && value < 5)
+        if(value >= 0 && value < 11) {
             mBuilder.setContentTitle("Very Low Voltage!");
-        else if(value > 4 && value < 8)
-            mBuilder.setContentTitle("Low Voltage!");
-        if(value >= 0 && value < 5)
             mBuilder.setContentText("Very low battery voltage detected!");
-        else if(value > 4 && value < 8)
+        }
+        // < 10.5 red, 10.5->12 yellow, > 12 green
+        else if(value >= 11) {
+            mBuilder.setContentTitle("Low Voltage!");
             mBuilder.setContentText("Battery voltage is starting to get low!");
+        }
         Intent resultIntent = new Intent(this, ShowData.class);
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
         stackBuilder.addParentStack(ShowData.class);

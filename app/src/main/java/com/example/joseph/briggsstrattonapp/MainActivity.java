@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     public static TextView voltageText;
     public static TextView tempText;
     public static TextView powerText;
+    private String voltage_value,temp_value,power_value;
 
     public static BluetoothDevice bsDevice;
     public static  BluetoothSocket socket;
@@ -76,6 +77,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 init();
+                Intent intent = new Intent(getApplicationContext(), ShowData.class);
+                // For right now, I'm just putting dummy data through to symbolize voltage,temp etc.
+                // since i don't have arduino on me.
+                intent.putExtra("voltage",voltage_value);
+                intent.putExtra("temp",temp_value);
+                intent.putExtra("power",power_value);
+                intent.putExtra("hours","103");
+                startActivity(intent);
             }
         });
 
@@ -85,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), ShowData.class);
                 // For right now, I'm just putting dummy data through to symbolize voltage,temp etc.
                 // since i don't have arduino on me.
-                intent.putExtra("voltage","4");
+                intent.putExtra("voltage","8");
                 intent.putExtra("temp","70");
                 intent.putExtra("power","on");
                 intent.putExtra("hours","103");
@@ -176,7 +185,8 @@ public class MainActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                voltageText.setText(value);
+                               // voltageText.setText(value);
+                                voltage_value = "" + value;
                             }
                         });
 
@@ -186,7 +196,8 @@ public class MainActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                tempText.setText(value);
+                               // tempText.setText(value);
+                                temp_value = "" + value;
                             }
                         });
                     } else if(characteristic.getUuid().toString().equals("19b10003-e8f2-537e-4f6c-d104768a1214")) {
@@ -195,7 +206,8 @@ public class MainActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                powerText.setText(value);
+                               // powerText.setText(value);
+                                power_value = "" + value;
                             }
                         });
                     }

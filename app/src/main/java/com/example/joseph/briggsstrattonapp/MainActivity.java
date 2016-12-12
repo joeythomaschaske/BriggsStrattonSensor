@@ -94,10 +94,13 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), ShowData.class);
                 // For right now, I'm just putting dummy data through to symbolize voltage,temp etc.
                 // since i don't have arduino on me.
-                intent.putExtra("voltage","8");
-                intent.putExtra("temp","70");
+                intent.putExtra("voltage","12");
+                intent.putExtra("temp","276");
                 intent.putExtra("power","on");
                 intent.putExtra("hours","103");
+                intent.putExtra("oil","90");
+                intent.putExtra("blades","50");
+                intent.putExtra("air","70");
                 startActivity(intent);
             }
         });

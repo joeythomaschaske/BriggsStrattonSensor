@@ -39,6 +39,12 @@ public class ShowData extends AppCompatActivity {
      */
     private GoogleApiClient client;
     private String voltageValue;
+    private String tempValue;
+    private String oilValue;
+    private String hoursValue;
+    private String bladesValue;
+    private String airValue;
+    private String powerValue;
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,23 +70,40 @@ public class ShowData extends AppCompatActivity {
         TextView voltView = (TextView) findViewById(R.id.volt_view);
         TextView tempView = (TextView) findViewById(R.id.temp_view);
         TextView powView = (TextView) findViewById(R.id.pow_view);
+        TextView oilView = (TextView) findViewById(R.id.oil_text_view);
+        TextView airView = (TextView) findViewById(R.id.air_text_view);
+        TextView bladesView = (TextView) findViewById(R.id.blade_text_view);
+
         if(b!=null)
         {
+            // 'b' used with b.get is the bundle that fetches data from other activity
             voltageValue =(String) b.get("voltage");
             voltView.setText(voltageValue + " V");
 
-            String tempValue =(String) b.get("temp");
+            tempValue =(String) b.get("temp");
             tempView.setText(tempValue + " F");
 
-            String powerValue =(String) b.get("power");
+            powerValue =(String) b.get("power");
             powView.setText(powerValue.toUpperCase());
 
-            String hoursValue =(String) b.get("hours");
+            hoursValue =(String) b.get("hours");
             hoursView.setText(hoursValue);
+
+            oilValue =(String) b.get("oil");
+            oilView.setText(oilValue + "%");
+
+            bladesValue =(String) b.get("blades");
+            bladesView.setText(bladesValue + "%");
+
+            airValue =(String) b.get("air");
+            airView.setText(airValue + "%");
         }
 
         setProgBarColorAndProgress(voltageValue);
-
+        setProgBarColorAndProgressTemp(tempValue);
+        setProgBarColorAndProgressAir(airValue);
+        setProgBarColorAndProgressOil(oilValue);
+        setProgBarColorAndProgressBlades(bladesValue);
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
@@ -107,6 +130,188 @@ public class ShowData extends AppCompatActivity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    private void setProgBarColorAndProgressTemp(String tempValue) {
+        int value = Integer.parseInt(tempValue);
+        ProgressBar temp = (ProgressBar) findViewById(R.id.temp_progress_bar);
+
+        if(value >= 300) {
+            temp.getProgressDrawable().setColorFilter(Color.RED,android.graphics.PorterDuff.Mode.SRC_IN);
+            setOffTempNotification();
+        }
+        else if(value > 0 && value < 275) {
+            temp.getProgressDrawable().setColorFilter(Color.GREEN,android.graphics.PorterDuff.Mode.SRC_IN);
+        }
+        else if(value < 300 && value >= 275) {
+            temp.getProgressDrawable().setColorFilter(Color.YELLOW,android.graphics.PorterDuff.Mode.SRC_IN);
+            setOffTempNotification();
+        }
+        temp.setProgress(value);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    private void setProgBarColorAndProgressOil(String oilValue) {
+        int value = Integer.parseInt(oilValue);
+        ProgressBar oil = (ProgressBar) findViewById(R.id.oil_progress_bar);
+
+        if(value >= 90) {
+            oil.getProgressDrawable().setColorFilter(Color.GREEN,android.graphics.PorterDuff.Mode.SRC_IN);
+        }
+        else if(value >= 80 && value < 90) {
+            oil.getProgressDrawable().setColorFilter(Color.YELLOW,android.graphics.PorterDuff.Mode.SRC_IN);
+            setOffOilNotification();
+        }
+        else if(value < 80) {
+            oil.getProgressDrawable().setColorFilter(Color.RED,android.graphics.PorterDuff.Mode.SRC_IN);
+            setOffOilNotification();
+        }
+        oil.setProgress(value);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    private void setProgBarColorAndProgressBlades(String oilValue) {
+        int value = Integer.parseInt(bladesValue);
+        ProgressBar blades = (ProgressBar) findViewById(R.id.blades_progress_bar);
+
+        if(value >= 90) {
+            blades.getProgressDrawable().setColorFilter(Color.GREEN,android.graphics.PorterDuff.Mode.SRC_IN);
+        }
+        else if(value >= 80 && value < 90) {
+            blades.getProgressDrawable().setColorFilter(Color.YELLOW,android.graphics.PorterDuff.Mode.SRC_IN);
+            setOffBladesNotification();
+        }
+        else if(value < 80) {
+            blades.getProgressDrawable().setColorFilter(Color.RED,android.graphics.PorterDuff.Mode.SRC_IN);
+            setOffBladesNotification();
+        }
+        blades.setProgress(value);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    private void setProgBarColorAndProgressAir(String airValue) {
+        int value = Integer.parseInt(airValue);
+        ProgressBar air = (ProgressBar) findViewById(R.id.air_filt_prog_bar);
+
+        if(value >= 90) {
+            air.getProgressDrawable().setColorFilter(Color.GREEN,android.graphics.PorterDuff.Mode.SRC_IN);
+        }
+        else if(value >= 80 && value < 90) {
+            air.getProgressDrawable().setColorFilter(Color.YELLOW,android.graphics.PorterDuff.Mode.SRC_IN);
+            setOffAirNotification();
+        }
+        else if(value < 80) {
+            air.getProgressDrawable().setColorFilter(Color.RED,android.graphics.PorterDuff.Mode.SRC_IN);
+            setOffAirNotification();
+        }
+        air.setProgress(value);
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    private void setOffTempNotification() {
+        int value = Integer.parseInt(tempValue);
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
+        mBuilder.setSmallIcon(R.drawable.engine_img);
+
+        if(value >= 300) {
+            mBuilder.setContentTitle("High Temp!");
+            mBuilder.setContentText("Engines running too hot!(" + tempValue + " degrees F");
+        }
+        else if(value >= 275 && value < 300) {
+            mBuilder.setContentTitle("High Temp!");
+            mBuilder.setContentText("Engine starting to get hot!(" + tempValue + " degrees F");
+        }
+        Intent resultIntent = new Intent(this, ShowData.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(ShowData.class);
+
+        // Adds the Intent that starts the Activity to the top of the stack
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,PendingIntent.FLAG_UPDATE_CURRENT);
+        mBuilder.setContentIntent(resultPendingIntent);
+
+        // Add as notification
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.notify(0, mBuilder.build());
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    private void setOffBladesNotification() {
+        int value = Integer.parseInt(bladesValue);
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
+        mBuilder.setSmallIcon(R.drawable.tractor_img);
+
+        if(value < 80) {
+            mBuilder.setContentTitle("Change Blades!");
+            mBuilder.setContentText("Change Blades ASAP!(" + bladesValue + " %");
+        }
+
+        Intent resultIntent = new Intent(this, ShowData.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(ShowData.class);
+
+        // Adds the Intent that starts the Activity to the top of the stack
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,PendingIntent.FLAG_UPDATE_CURRENT);
+        mBuilder.setContentIntent(resultPendingIntent);
+
+        // Add as notification
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.notify(0, mBuilder.build());
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    private void setOffOilNotification() {
+        int value = Integer.parseInt(oilValue);
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
+        mBuilder.setSmallIcon(R.drawable.tractor_img);
+
+        if(value < 80) {
+            mBuilder.setContentTitle("Change Oil!");
+            mBuilder.setContentText("Change Oil ASAP!(" + oilValue + " %");
+        }
+
+        Intent resultIntent = new Intent(this, ShowData.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(ShowData.class);
+
+        // Adds the Intent that starts the Activity to the top of the stack
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,PendingIntent.FLAG_UPDATE_CURRENT);
+        mBuilder.setContentIntent(resultPendingIntent);
+
+        // Add as notification
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.notify(1, mBuilder.build());
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    private void setOffAirNotification() {
+        int value = Integer.parseInt(airValue);
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
+        mBuilder.setSmallIcon(R.drawable.tractor_img);
+
+        if(value < 80) {
+            mBuilder.setContentTitle("Low Air Filter!");
+            mBuilder.setContentText("Change air filter ASAP!(" + airValue + " %");
+        }
+        else if(value >= 80 && value < 90) {
+            mBuilder.setContentTitle("Air Filter getting low!");
+            mBuilder.setContentText("Replace air filter soon!(" + airValue + " %");
+        }
+        Intent resultIntent = new Intent(this, ShowData.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(ShowData.class);
+
+        // Adds the Intent that starts the Activity to the top of the stack
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,PendingIntent.FLAG_UPDATE_CURRENT);
+        mBuilder.setContentIntent(resultPendingIntent);
+
+        // Add as notification
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.notify(2, mBuilder.build());
+    }
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void setOffVoltageNotification() {
         int value = Integer.parseInt(voltageValue);
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
@@ -131,7 +336,7 @@ public class ShowData extends AppCompatActivity {
 
         // Add as notification
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.notify(0, mBuilder.build());
+        manager.notify(3, mBuilder.build());
     }
 
     /**

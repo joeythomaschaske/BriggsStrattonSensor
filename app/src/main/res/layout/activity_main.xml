@@ -1,47 +1,35 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
     android:id="@+id/home_layout"
-    android:background="#dad6e6">
+    android:background="#ffffff">
+
+    //android:background="#dad6e6"
 
     <LinearLayout
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:orientation="horizontal"
         android:gravity="center">
-        <Button
-            android:layout_width="189dp"
-            android:layout_height="153dp"
-            android:text="@string/engine"
-            android:id="@+id/bgl_button"
-            android:background="@android:color/transparent"
-            android:drawableTop="@drawable/engine_img"/>
 
         <Button
             android:layout_width="189dp"
             android:layout_height="153dp"
-            android:text="@string/oil"
-            android:id="@+id/diet_button"
+            android:text="@string/connect"
+            android:id="@+id/bluetooth_button"
             android:background="@android:color/transparent"
-            android:drawableTop="@drawable/oil_img"/>
+            android:drawableTop="@drawable/bluetoooth_img"/>
+
+        <Button
+            android:layout_width="189dp"
+            android:layout_height="153dp"
+            android:text="@string/tractor"
+            android:id="@+id/tractor_button"
+            android:background="@android:color/transparent"
+            android:drawableTop="@drawable/tractor_img"/>
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center">
 
-        <Button
-            android:layout_width="189dp"
-            android:layout_height="153dp"
-            android:text="@string/battery"
-            android:id="@+id/exercise_button"
-            android:background="@android:color/transparent"
-            android:drawableTop="@drawable/battery_img"/>
-
-    </LinearLayout>
 
 </LinearLayout>

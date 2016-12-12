@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     public static TextView voltageText;
     public static TextView tempText;
     public static TextView powerText;
-    private String voltage_value,temp_value,power_value;
+    private String voltage_value,temp_value,power_value, hours_value;
 
     public static BluetoothDevice bsDevice;
     public static  BluetoothSocket socket;
@@ -170,9 +170,11 @@ public class MainActivity extends AppCompatActivity {
                     BluetoothGattCharacteristic voltage = chars.get(0);
                     BluetoothGattCharacteristic temp = chars.get(1);
                     BluetoothGattCharacteristic onOff = chars.get(2);
+                    BluetoothGattCharacteristic hours = chars.get(3);
                     queue.add(voltage);
                     queue.add(temp);
                     queue.add(onOff);
+                    queue.add(hours);
                     boolean volt = gatt.readCharacteristic(queue.remove(0));
                     //boolean temperature = gatt.readCharacteristic(temp);
                     //boolean power = gatt.readCharacteristic(onOff);
@@ -211,6 +213,17 @@ public class MainActivity extends AppCompatActivity {
                             public void run() {
                                // powerText.setText(value);
                                 power_value = "" + value;
+                            }
+                        });
+                    }
+                    else if(characteristic.getUuid().toString().equals("19b10004-e8f2-537e-4f6c-d104768a1214")) {
+                        // hours
+                        final String value = characteristic.getStringValue(0); //this section needs to go into onCharacteristicRead
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                // powerText.setText(value);
+                                hours_value = "" + value;
                             }
                         });
                     }

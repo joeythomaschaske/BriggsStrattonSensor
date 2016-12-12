@@ -50,20 +50,43 @@ public class ShowData extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_data);
-        Calendar c = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd,MMMM,YYYY hh,mm,a");
-        //date and time stuff
-        String strDate = sdf.format(c.getTime());
-        // Parsing the string to make it look nicer
-        String []parseDate;
-        parseDate = strDate.split(" ");
-        String firstPart = parseDate[0];
-        String secondPart = parseDate[1];
+        Thread t = new Thread() {
 
-        TextView edtDate = (TextView) findViewById(R.id.stats_date);
-        edtDate.setText(firstPart);
-        TextView edtTime = (TextView) findViewById(R.id.stats_time);
-        edtTime.setText(secondPart);
+            @Override
+            public void run() {
+                try {
+                    while (!isInterrupted()) {
+                        Thread.sleep(1000);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                // update TextView here!
+                                Calendar c = Calendar.getInstance();
+                                SimpleDateFormat sdf = new SimpleDateFormat("dd,MMMM,YYYY hh,mm,ss,a");
+                                //date and time stuff
+                                String strDate = sdf.format(c.getTime());
+                                // Parsing the string to make it look nicer
+                                String []parseDate;
+                                parseDate = strDate.split(" ");
+                                String firstPart = parseDate[0];
+                                String secondPart = parseDate[1];
+
+                                firstPart = replaceCommasWithSpaces(firstPart);
+                                TextView edtDate = (TextView) findViewById(R.id.stats_date);
+                                edtDate.setText(firstPart);
+                                secondPart = replaceCommasWithColons(secondPart);
+                                TextView edtTime = (TextView) findViewById(R.id.stats_time);
+                                edtTime.setText(secondPart);
+                            }
+                        });
+                    }
+                } catch (InterruptedException e) {
+                }
+            }
+        };
+
+        t.start();
+
         Bundle b = getIntent().getExtras();
         // Will update our textViews with new values
         TextView hoursView = (TextView) findViewById(R.id.hours_view);
@@ -107,6 +130,25 @@ public class ShowData extends AppCompatActivity {
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+    }
+
+    private String replaceCommasWithColons(String hasCommas) {
+        String temp = "";
+        for(int i=0;i<hasCommas.length();++i) {
+            if(hasCommas.charAt(i) == ',') temp += ':';
+            else temp += hasCommas.charAt(i);
+        }
+        return temp;
+    }
+
+    private String replaceCommasWithSpaces(String hasCommas) {
+        String temp = "";
+        for(int i=0;i<hasCommas.length();++i) {
+            if(hasCommas.charAt(i) == ',') temp += ' ';
+            else temp += hasCommas.charAt(i);
+        }
+
+        return temp;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
